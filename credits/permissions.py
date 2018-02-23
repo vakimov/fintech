@@ -1,25 +1,31 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 from rest_framework import permissions
 
-from credits.models import User
 
+def permission_any(*conditions):
+    """Factory for Permission class that checks if any of condition is True
 
-class IsSuperuser(permissions.BasePermission):
+    Condition could be either dict with at least one of allowed criteria:
+    * user (user access type)
+    * actions ('list', 'retrieve', 'create', 'update', 'destroy')
+    or user access type."""
 
-    def has_permission(self, request, view):
-        return request.user.access_type == User.SUPERUSER
+    class PermissionCheck(permissions.BasePermission):
 
+        def has_permission(self, request, view):
 
-class IsSuperuserOrCreditor(permissions.BasePermission):
+            def check(condition):
+                if isinstance(condition, dict):
+                    return all([
+                        request.user.access_type == condition['user'] if 'user' in condition else True,
+                        view.action in condition['actions'] if 'actions' in condition else True,
+                    ])
+                else:
+                    access_type = condition
+                    return request.user.access_type == access_type
 
-    def has_permission(self, request, view):
-        if request.user.access_type == User.SUPERUSER:
-            return True
-        return request.user.access_type == User.CREDITORS
+            return any(check(c) for c in conditions)
 
-
-class IsSuperuserOrPartner(permissions.BasePermission):
-
-    def has_permission(self, request, view):
-        if request.user.access_type == User.SUPERUSER:
-            return True
-        return request.user.access_type == User.PARTNERS
+    return PermissionCheck

@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
@@ -7,7 +10,7 @@ from credits.form import OfferForm
 
 class ExtendedUserAdmin(UserAdmin):
     fieldsets = UserAdmin.fieldsets[:1] + (
-        ('Доступ к api', {'fields': ('access_type', )}),
+        ('Доступ к api', {'fields': ('access_type',)}),
     ) + UserAdmin.fieldsets[1:]
 
 
@@ -15,7 +18,7 @@ admin.site.register(models.User, ExtendedUserAdmin)
 
 
 class OrganizationAdmin(admin.ModelAdmin):
-    fields = ('name', )
+    fields = ('name',)
 
 
 admin.site.register(models.Organization, OrganizationAdmin)
@@ -98,7 +101,7 @@ class ApplicationAdmin(admin.ModelAdmin):
     raw_id_fields = ('customer_profile', 'offer')
 
     date_hierarchy = 'created_at'
-    list_filter = (ApplicationStatusFilter, )
+    list_filter = (ApplicationStatusFilter,)
 
     search_fields = [
         'customer_profile__surname',

@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 from django.utils import timezone
 
 from rest_framework import serializers
@@ -24,7 +27,7 @@ class OrganizationSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = models.Organization
-        fields = ('id', 'name', )
+        fields = ('id', 'name',)
 
 
 class OfferSerializer(serializers.HyperlinkedModelSerializer):

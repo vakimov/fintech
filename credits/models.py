@@ -1,7 +1,11 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core import validators
 from django.utils import timezone
+from django.utils.encoding import python_2_unicode_compatible
 
 from phonenumber_field.modelfields import PhoneNumberField
 
@@ -42,6 +46,7 @@ class ChangingInfo(CreationInfo):
         abstract = True
 
 
+@python_2_unicode_compatible
 class Organization(models.Model):
     name = models.CharField(max_length=100)
 
@@ -53,6 +58,7 @@ class Organization(models.Model):
         verbose_name_plural = 'Организации'
 
 
+@python_2_unicode_compatible
 class Offer(ChangingInfo):
     CATEGORIES = (
         ('C', 'потребительский'),  # consumer credit
@@ -87,6 +93,7 @@ class Offer(ChangingInfo):
         verbose_name_plural = 'Предложения'
 
 
+@python_2_unicode_compatible
 class CustomerProfile(ChangingInfo):
 
     first_name = models.CharField(max_length=100, verbose_name='Имя')
@@ -115,6 +122,7 @@ class CustomerProfile(ChangingInfo):
         verbose_name_plural = 'Анкеты клиентов'
 
 
+@python_2_unicode_compatible
 class Application(CreationInfo):
     STATUS_NEW = 'NEW'
     STATUS_SENT = 'SENT'
@@ -126,7 +134,7 @@ class Application(CreationInfo):
         (STATUS_RECEIVED, 'принятая'),
     )
 
-    sent_at = models.DateTimeField(default=timezone.now,
+    sent_at = models.DateTimeField(default=None, null=True, blank=True,
                                    verbose_name='Дата и время отправки')
     customer_profile = models.ForeignKey(CustomerProfile,
                                          verbose_name='Анкета клиента',

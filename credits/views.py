@@ -1,8 +1,13 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
+from django.utils import timezone
+
 from rest_framework import viewsets
-from rest_framework import generics
 from rest_framework import filters
 from rest_framework import mixins
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
 from credits import serializers
 from credits import models
@@ -17,7 +22,10 @@ class CustomerProfileListCreate(mixins.ListModelMixin,
     queryset = models.CustomerProfile.objects.all()
     serializer_class = serializers.CustomerProfileSerializer
 
-    permission_classes = (permissions.IsSuperuserOrPartner,)
+    permission_classes = (
+        IsAuthenticated,
+        permissions.permission_any(models.User.SUPERUSER, models.User.PARTNERS)
+    )
 
     filter_backends = (FilterBackend, filters.SearchFilter, DescribedOrderingFilter)
 
@@ -33,49 +41,62 @@ class CustomerProfileListCreate(mixins.ListModelMixin,
     ordering = ('id',)
 
 
-class CustomerProfileEdit(mixins.RetrieveModelMixin,
-                          mixins.UpdateModelMixin,
-                          mixins.DestroyModelMixin,
-                          viewsets.GenericViewSet):
+class CustomerProfileRetrieveUpdateDestroy(mixins.RetrieveModelMixin,
+                                           mixins.UpdateModelMixin,
+                                           mixins.DestroyModelMixin,
+                                           viewsets.GenericViewSet):
     queryset = models.CustomerProfile.objects.all()
     serializer_class = serializers.CustomerProfileSerializer
 
-    permission_classes = (permissions.IsSuperuser,)
+    permission_classes = (
+        IsAuthenticated,
+        permissions.permission_any(models.User.SUPERUSER,
+                                   dict(user=models.User.PARTNERS, actions=['retrieve']))
+    )
 
 
 class ApplicationListCreate(mixins.ListModelMixin,
                             mixins.CreateModelMixin,
                             viewsets.GenericViewSet):
     queryset = models.Application.objects.all()
+    serializer_class = serializers.ApplicationSendSerializer
 
-    def get_serializer_class(self):
-        if self.request and self.action == 'create':
-            if self.request.user.access_type == models.User.PARTNERS:
-                return serializers.ApplicationSendSerializer
-            return serializers.ApplicationEditSerializer
-        return serializers.ApplicationSerializer
-
-    permission_classes = (permissions.IsSuperuserOrPartner,)
+    permission_classes = (
+        IsAuthenticated,
+        permissions.permission_any(models.User.SUPERUSER,
+                                   dict(user=models.User.PARTNERS, actions=['create']),
+                                   dict(user=models.User.CREDITORS, actions=['list']))
+    )
 
     filter_backends = (FilterBackend, filters.SearchFilter, DescribedOrderingFilter)
 
     filter_fields = ('status',)
-    ordering_fields = ('customer_profile__surname', 'created_at', 'changed_at', 'sent_at', 'status')
+    ordering_fields = (
+        'customer_profile__surname', 'created_at', 'changed_at', 'sent_at', 'status',
+    )
     ordering = ('-sent_at',)
 
 
-class ApplicationEdit(mixins.RetrieveModelMixin,
-                      mixins.UpdateModelMixin,
-                      mixins.DestroyModelMixin,
-                      viewsets.GenericViewSet):
+class ApplicationRetrieveUpdateDestroy(mixins.RetrieveModelMixin,
+                                       mixins.UpdateModelMixin,
+                                       mixins.DestroyModelMixin,
+                                       viewsets.GenericViewSet):
     queryset = models.Application.objects.all()
-    serializer_class = serializers.ApplicationSerializer
+    serializer_class = serializers.ApplicationEditSerializer
 
-    permission_classes = (permissions.IsSuperuser,)
+    permission_classes = (
+        IsAuthenticated,
+        permissions.permission_any(models.User.SUPERUSER,
+                                   dict(user=models.User.CREDITORS, actions=['retrieve']))
+    )
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
-        if request.user.access_type == models.User.PARTNERS:
-            instance.status = models.Application.STATUS_SENT
+
+        if (request.user.access_type == models.User.CREDITORS
+                and instance.status != models.Application.STATUS_RECEIVED):
+            instance.sent_at = timezone.now()
+            instance.status = models.Application.STATUS_RECEIVED
+            instance.save()
         return Response(serializer.data)
