@@ -1,0 +1,124 @@
+- model: credits.user
+  pk: 1
+  fields:
+    password: pbkdf2_sha256$36000$rZ2oz9aHhF3g$WcuRQdXwZjqkY6JrOzfCYw8KOzeeTdRpolVUd1+3R60=
+    last_login: 2017-10-31 23:16:09+00:00
+    is_superuser: true
+    username: admin
+    first_name: ''
+    last_name: ''
+    email: no@any.mail
+    is_staff: true
+    is_active: true
+    date_joined: 2017-10-31 23:15:10+00:00
+    access_type: 1
+    groups: []
+    user_permissions: []
+- model: credits.organization
+  pk: 1
+  fields:
+    name: Потерябанк
+- model: credits.organization
+  pk: 2
+  fields:
+    name: Бета Банк
+- model: credits.organization
+  pk: 3
+  fields:
+    name: Банк Арьергард
+- model: credits.offer
+  pk: 1
+  fields:
+    created_at: 2017-10-31 23:26:12+00:00
+    changed_at: 2017-10-31 23:26:12+00:00
+    started_rotating_at: 2017-10-31 23:26:19+00:00
+    ended_rotating_at: 2017-10-31 23:26:21+00:00
+    name: Невыгодный кредит, но вы его все равно взьмете
+    category: C
+    min_score: 400
+    max_score: 860
+    organization: 1
+- model: credits.offer
+  pk: 2
+  fields:
+    created_at: 2017-10-31 23:26:12+00:00
+    changed_at: 2017-10-31 23:26:12+00:00
+    started_rotating_at: 2017-10-31 23:26:19+00:00
+    ended_rotating_at: 2017-10-31 23:26:21+00:00
+    name: Норм кредит, с кучей подводных камней
+    category: C
+    min_score: 350
+    max_score: 860
+    organization: 2
+- model: credits.offer
+  pk: 3
+  fields:
+    created_at: 2017-10-31 23:26:12+00:00
+    changed_at: 2017-10-31 23:26:12+00:00
+    started_rotating_at: 2017-10-31 23:26:19+00:00
+    ended_rotating_at: 2017-10-31 23:26:21+00:00
+    name: Кредит "Скажи привет коллекторам"
+    category: C
+    min_score: 300
+    max_score: 860
+    organization: 3
+- model: credits.customerprofile
+  pk: 1
+  fields:
+    created_at: 2017-10-31 23:25:55.063152+00:00
+    changed_at: 2017-10-31 23:25:55.063176+00:00
+    first_name: Иван
+    patronymic: Иванович
+    surname: Иванов
+    birth_day: 1981-10-31
+    phone: '+74990000001'
+    passport_number: '0000000001'
+    score: null
+- model: credits.customerprofile
+  pk: 2
+  fields:
+    created_at: 2017-10-31 23:25:55.063152+00:00
+    changed_at: 2017-10-31 23:25:55.063176+00:00
+    first_name: Петр
+    patronymic: Пертович
+    surname: Петров
+    birth_day: 1980-02-01
+    phone: '+74990000002'
+    passport_number: '0000000002'
+    score: null
+- model: credits.customerprofile
+  pk: 3
+  fields:
+    created_at: 2017-10-31 23:25:55.063152+00:00
+    changed_at: 2017-10-31 23:25:55.063176+00:00
+    first_name: Сидоров
+    patronymic: Сидорович
+    surname: Сидоров
+    birth_day: 1983-02-03
+    phone: '+74990000003'
+    passport_number: '0000000003'
+    score: null
+- model: credits.application
+  pk: 1
+  fields:
+    created_at: 2017-11-01 01:08:57+00:00
+    sent_at: null
+    customer_profile: 1
+    offer: 1
+    status: NEW
+- model: credits.application
+  pk: 2
+  fields:
+    created_at: 2017-11-01 01:08:57+00:00
+    sent_at: null
+    customer_profile: 2
+    offer: 2
+    status: NEW
+- model: credits.application
+  pk: 3
+  fields:
+    created_at: 2017-11-01 01:08:57+00:00
+    sent_at: null
+    customer_profile: 3
+    offer: 3
+    status: NEW

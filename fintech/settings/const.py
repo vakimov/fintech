@@ -15,6 +15,8 @@ INSTALLED_APPS = [
     'credits.apps.ApiConfig',
     'phonenumber_field',
     'rest_framework',
+    'django_filters',
+    'rest_framework_swagger',
 ]
 
 MIDDLEWARE = [
@@ -82,3 +84,13 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 PHONENUMBER_DB_FORMAT = 'INTERNATIONAL'
+
+AUTH_USER_MODEL = 'credits.User'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAdminUser',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10
+}
